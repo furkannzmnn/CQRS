@@ -9,7 +9,9 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -37,10 +39,12 @@ public class ElasticSearchService {
         this.restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
     }
 
-    public <S> List<S> search(String indexName, Class<S> clazz) throws IOException {
+    public <S> List<QueryResponse<S>> search(String indexName, Class<S> clazz) throws IOException {
 
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
         sourceBuilder.query(QueryBuilders.matchAllQuery());
+        sourceBuilder.sort("id", SortOrder.DESC);
         sourceBuilder.from(0);
         sourceBuilder.size(2000);
 
@@ -50,16 +54,21 @@ public class ElasticSearchService {
         SearchResponse response = this.restHighLevelClient.search(request, RequestOptions.DEFAULT);
 
         return Stream.of(response.getHits().getHits())
-                .map(hit -> {
-                    try {
-                        return mapper.readValue(hit.getSourceAsString(), clazz);
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                })
+                .map(hit -> read(hit, clazz))
+                .map(QueryResponse::new)
                 .collect(java.util.stream.Collectors.toList());
     }
 
 
+    private <S> S read(SearchHit hit, Class<S> clazz) {
+        try {
+            return mapper.readValue(hit.getSourceAsString(), clazz);
+        }catch (JsonProcessingException e) {
+           return null;
+        }
+    }
+
+
+    private record QueryResponse<S>(S hits) {
+    }
 }

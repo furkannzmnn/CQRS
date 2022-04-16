@@ -20,7 +20,7 @@ public class PageQueryHandler {
         this.elasticSearchService = elasticSearchService;
     }
 
-    public List<Publication> getPublications() throws IOException {
+    public List<?> getPublications(PageQuery query) throws IOException {
         return elasticSearchService.search(INDEX, Publication.class);
     }
 

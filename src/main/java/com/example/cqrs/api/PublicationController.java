@@ -3,6 +3,7 @@ package com.example.cqrs.api;
 import com.example.cqrs.cqrs.command.CommandResponse;
 import com.example.cqrs.cqrs.command.CreatePageCommand;
 import com.example.cqrs.cqrs.command.CreatePageCommandHandler;
+import com.example.cqrs.cqrs.query.PageQuery;
 import com.example.cqrs.cqrs.query.PageQueryHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,8 @@ public record PublicationController(CreatePageCommandHandler createPageCommandHa
     }
 
     @GetMapping("/publication/pages")
-    public ResponseEntity<?> getPages() throws IOException {
-        return ResponseEntity.ok(pageQueryHandler.getPublications());
+    public ResponseEntity<?> getPages(@RequestBody PageQuery query) throws IOException {
+        return ResponseEntity.ok(pageQueryHandler.getPublications(query));
     }
 
 }
