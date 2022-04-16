@@ -3,7 +3,7 @@
 # Getting Started
 
 
-![Uygulama Ekran Görüntüsü](https://i.hizliresim.com/i5o3db8.jpg)
+![Uygulama Ekran Görüntüsü](https://www.hizliresim.com/97afnor)
 
 
 ### Reference Documentation
