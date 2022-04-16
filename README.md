@@ -3,7 +3,7 @@
 # Getting Started
 
 
-![Uygulama Ekran Görüntüsü](https://www.hizliresim.com/97afnor)
+![Uygulama Ekran Görüntüsü](https://i.hizliresim.com/97afnor.jpg)
 
 
 ### Reference Documentation
