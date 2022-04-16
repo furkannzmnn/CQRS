@@ -1,0 +1,54 @@
+###
+
+# curl --location --request PUT 'http://localhost:9200/publiction'
+#--header 'Content-Type: application/json'
+#--data-raw '{
+#"settings": {
+#    "index": {
+#        "number_of_shards": 1,
+#        "number_of_replicas": 1
+#    }
+#},
+#"mappings": {
+#    "properties": {
+#        "id": {
+#        "type": "text"
+#    },
+#        "title": {
+#        "type": "text"
+#    },
+#        "author": {
+#        "type": "text"
+#    }
+#    }
+#}
+#}'
+PUT http://localhost:9200/publications
+Content-Type: application/json
+
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1
+    }
+  },
+  "mappings": {
+    "type_name": {
+      "properties": {
+      "id": {
+        "type": "long"
+      },
+      "title": {
+        "type": "text"
+      },
+      "author": {
+        "type": "text"
+      }
+    }
+  }
+  }
+}
+
+###
+

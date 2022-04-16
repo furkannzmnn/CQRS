@@ -1,0 +1,114 @@
+version: '3'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - cqrs
+
+  broker:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: broker
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      kafka.bootstrap.servers: broker:9092
+      GROUP_ID: group_id
+      KAFKA_CREATE_TOPICS: "product"
+
+    networks:
+      - cqrs
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=broker
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:29092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+      - KAFKA_CLUSTERS_0_READONLY=true
+
+    networks:
+      - cqrs
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.2
+    platform: linux/x86_64
+    environment:
+      - discovery.type=single-node
+      - max_open_files=65536
+      - max_content_length_in_bytes=100000000
+      - transport.host= elasticsearch
+    volumes:
+      - $HOME/app:/var/app
+
+    networks:
+      - cqrs
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  cqrs:
+    image: cqrs
+    container_name: cqrs
+    ports:
+      - "8089:8089"
+    volumes:
+      - $HOME/app:/var/app
+    networks:
+      - cqrs
+    expose:
+      - "8089"
+    depends_on:
+      - postgresql
+      - zookeeper
+      - broker
+
+    environment:
+      - spring.datasource.url=jdbc:postgresql://postgresql:5432/cqrs_db
+      - kafka.group.id=group_id
+      - kafka.bootstrap.servers=broker:29092
+      - kafka.consumer.group.id=group_id
+      - kafka.consumer.enable.auto.commit=true
+      - kafka.consumer.auto.commit.interval.ms=1000
+      - kafka.consumer.auto.offset.reset=earliest
+      - kafka.consumer.max.poll.records=1
+      - server.port=8089
+
+  postgresql:
+    image: postgres:11.1-alpine
+    platform: linux/x86_64
+    container_name: postgresql
+    volumes:
+      - ./postgresql/:/var/lib/postgresql/data/
+    networks:
+      - cqrs
+    environment:
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=cqrs_db
+    ports:
+      - "5432:5432"
+
+networks:
+  cqrs:
