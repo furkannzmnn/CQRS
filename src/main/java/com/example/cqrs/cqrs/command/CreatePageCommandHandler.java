@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -18,9 +17,9 @@ public record CreatePageCommandHandler(PublicationRepository publicationReposito
                                        ObjectMapper mapper,
                                        KafkaTemplate<String, String> kafkaTemplate) {
 
-    public CommandResponse<?> handle(CreatePageCommand command) throws ExecutionException, InterruptedException {
+    public CommandResponse<?> handle(CreatePageCommand command) {
 
-        final AtomicReference<CommandResponse<Object>> response = new AtomicReference<>(new CommandResponse<>(null, true));
+        final AtomicReference<CommandResponse<Object>> response = new AtomicReference<>(CommandResponse.ok(null));
 
         var publication = new Publication(
                 command.getId(), command.getTitle(), command.getAuthor()
@@ -36,20 +35,22 @@ public record CreatePageCommandHandler(PublicationRepository publicationReposito
                         return response;
                     }
                 })
-                .thenAccept(call -> response.set(responseHandler((CommandResponse<?>) call)));
+                .thenAccept(call -> response.set(responseHandler(response)));
 
               future.join();
               return response.get();
     }
 
 
-    private CommandResponse<Object> responseHandler(CommandResponse<?> o) {
-        if (o.getResponse() != null) {
+    private CommandResponse<Object> responseHandler(AtomicReference<CommandResponse<Object>> o) {
+        if (o.get().getResponse() != null) {
             @SuppressWarnings("unchecked")
-            ListenableFuture<SendResult<?,?>> result = (ListenableFuture<SendResult<?,?>>) o.getResponse();
-            return new CommandResponse<>(result, true);
+            ListenableFuture<SendResult<?,?>> result = (ListenableFuture<SendResult<?,?>>) o.get().getResponse();
+            o.set(CommandResponse.ok(result));
+            return o.get();
         }
-        return new CommandResponse<>(o, false);
+         o.set(CommandResponse.error(null));
+         return o.get();
     }
 
 }

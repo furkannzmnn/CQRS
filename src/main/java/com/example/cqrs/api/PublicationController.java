@@ -3,9 +3,7 @@ package com.example.cqrs.api;
 import com.example.cqrs.cqrs.command.CommandResponse;
 import com.example.cqrs.cqrs.command.CreatePageCommand;
 import com.example.cqrs.cqrs.command.CreatePageCommandHandler;
-import com.example.cqrs.cqrs.query.PageQuery;
 import com.example.cqrs.cqrs.query.PageQueryHandler;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +19,7 @@ public record PublicationController(CreatePageCommandHandler createPageCommandHa
 
     @PostMapping("/publication/create")
     public CommandResponse<?> createPage(@RequestBody CreatePageCommand command) throws ExecutionException, InterruptedException {
-        CommandResponse<?> response = createPageCommandHandler.handle(command);
-
-        return response;
+        return createPageCommandHandler.handle(command);
     }
 
     @GetMapping("/publication/pages")
