@@ -29,15 +29,15 @@ public class ElasticSearchService {
         this.mapper = mapper;
     }
 
-    public <T> void createIndex(String indexName, Long documentUniqueId, T source) throws IOException {
-        String json = mapper.writeValueAsString(source);
+        public <T> void createIndex(String indexName, Long id, T source) throws IOException {
+            String json = mapper.writeValueAsString(source);
 
-        IndexRequest indexRequest = new IndexRequest(indexName);
-        indexRequest.id(String.valueOf(documentUniqueId));
-        indexRequest.source(json, XContentType.JSON);
+            IndexRequest indexRequest = new IndexRequest(indexName);
+            indexRequest.id(String.valueOf(id));
+            indexRequest.source(json, XContentType.JSON);
 
-        this.restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
-    }
+            this.restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+        }
 
     public <S> List<QueryResponse<S>> search(String indexName, Class<S> clazz) throws IOException {
 

@@ -13,21 +13,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 public record PublicationController(CreatePageCommandHandler createPageCommandHandler,
                                     PageQueryHandler pageQueryHandler) {
 
     @PostMapping("/publication/create")
-    public boolean createPage(@RequestBody CreatePageCommand command) throws JsonProcessingException {
+    public CommandResponse<?> createPage(@RequestBody CreatePageCommand command) throws ExecutionException, InterruptedException {
         CommandResponse<?> response = createPageCommandHandler.handle(command);
 
-        return response.isSuccess();
+        return response;
     }
 
     @GetMapping("/publication/pages")
-    public ResponseEntity<?> getPages(@RequestBody PageQuery query) throws IOException {
-        return ResponseEntity.ok(pageQueryHandler.getPublications(query));
+    public ResponseEntity<?> getPages() throws IOException {
+        return ResponseEntity.ok(pageQueryHandler.getPublications());
     }
 
 }
