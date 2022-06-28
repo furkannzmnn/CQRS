@@ -69,6 +69,6 @@ public class ElasticSearchService {
     }
 
 
-    private record QueryResponse<S>(S hits) {
+    public record QueryResponse<S>(S hits) {
     }
 }

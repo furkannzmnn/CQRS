@@ -12,7 +12,7 @@ public record PageQueryHandler(ElasticSearchService elasticSearchService) {
 
     private static final String INDEX = "publications";
 
-    public List<?> getPublications() throws IOException {
+    public List<ElasticSearchService.QueryResponse<Publication>> getPublications() throws IOException {
         return elasticSearchService.search(INDEX, Publication.class);
     }
 }
