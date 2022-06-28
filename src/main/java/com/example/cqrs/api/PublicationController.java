@@ -18,7 +18,7 @@ public record PublicationController(CreatePageCommandHandler createPageCommandHa
                                     PageQueryHandler pageQueryHandler) {
 
     @PostMapping("/publication/create")
-    public CommandResponse<?> createPage(@RequestBody CreatePageCommand command) throws ExecutionException, InterruptedException {
+    public CommandResponse<?> createPage(@RequestBody CreatePageCommand command) {
         return createPageCommandHandler.handle(command);
     }
 
