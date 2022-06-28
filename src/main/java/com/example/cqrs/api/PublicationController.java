@@ -20,7 +20,7 @@ public record PublicationController(CreatePageCommandHandler createPageCommandHa
                                     PageQueryHandler pageQueryHandler) {
 
     @PostMapping("/publication/create")
-    public CommandResponse<Object> createPage(@RequestBody CreatePageCommand command) {
+    public CommandResponse<?> createPage(@RequestBody CreatePageCommand command) {
         return createPageCommandHandler.handle(command);
     }
 
@@ -28,5 +28,4 @@ public record PublicationController(CreatePageCommandHandler createPageCommandHa
     public ResponseEntity<List<ElasticSearchService.QueryResponse<Publication>>> getPages() throws IOException {
         return ResponseEntity.ok(pageQueryHandler.getPublications());
     }
-
 }
