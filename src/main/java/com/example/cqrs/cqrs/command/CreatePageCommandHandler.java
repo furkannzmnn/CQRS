@@ -17,7 +17,7 @@ public record CreatePageCommandHandler(PublicationRepository publicationReposito
                                        ObjectMapper mapper,
                                        KafkaTemplate<String, String> kafkaTemplate) {
 
-    public CommandResponse<?> handle(CreatePageCommand command) {
+    public CommandResponse<Object> handle(CreatePageCommand command) {
 
         final AtomicReference<CommandResponse<Object>> response = new AtomicReference<>(CommandResponse.ok(null));
 
