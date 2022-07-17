@@ -1,6 +1,8 @@
 # CQRS
 
-# Getting Started
+# MEDİUM:
+
+https://medium.com/@furkannzmnn/cqrs-command-query-responsibility-segregation-pattern-i%CC%87mplementation-with-spring-java-kotlin-and-30acf9be0eb0
 
 
 ![Uygulama Ekran Görüntüsü](https://i.hizliresim.com/97afnor.jpg)
