@@ -68,33 +68,6 @@ services:
       - "9200:9200"
       - "9300:9300"
 
-  cqrs:
-    image: cqrs
-    container_name: cqrs
-    ports:
-      - "8089:8089"
-    volumes:
-      - $HOME/app:/var/app
-    networks:
-      - cqrs
-    expose:
-      - "8089"
-    depends_on:
-      - postgresql
-      - zookeeper
-      - broker
-
-    environment:
-      - spring.datasource.url=jdbc:postgresql://postgresql:5432/cqrs_db
-      - kafka.group.id=group_id
-      - kafka.bootstrap.servers=broker:29092
-      - kafka.consumer.group.id=group_id
-      - kafka.consumer.enable.auto.commit=true
-      - kafka.consumer.auto.commit.interval.ms=1000
-      - kafka.consumer.auto.offset.reset=earliest
-      - kafka.consumer.max.poll.records=1
-      - server.port=8089
-
   postgresql:
     image: postgres:11.1-alpine
     platform: linux/x86_64
